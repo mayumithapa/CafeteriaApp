@@ -1,0 +1,9 @@
+* {
+    margin: 0px;
+    font-family: "Helvetica";
+    color: #7d6b56;
+}
+
+.MuiAutocomplete-hasPopupIcon.MuiAutocomplete-hasClearIcon.css-rltomx-MuiAutocomplete-root .MuiOutlinedInput-root {
+    margin-bottom: 20px;
+}
