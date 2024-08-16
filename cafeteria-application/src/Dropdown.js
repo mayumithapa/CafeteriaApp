@@ -1,11 +1,11 @@
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import React, { useState } from "react"; // Import useState hook
+import React, { useState } from "react";
 import { styled } from "@mui/material/styles";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 import Stack from "@mui/material/Stack";
 import Chip from "@mui/material/Chip";
 import { IconButton } from "@mui/material";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 
 // Custom styled components
 const CustomTextField = styled(TextField)(({ theme }) => ({
@@ -38,6 +38,26 @@ const CustomChip = styled(Chip)(({ theme }) => ({
 
 const Dropdown = ({ id, emp, lunch, handleDeleteClick, onOpenAddDialog }) => {
   const [selectedEmployee, setSelectedEmployee] = useState(null); // State to store selected employee
+  const [selectedFood, setSelectedFood] = useState([]); // State to store selected food items
+
+  const handleFoodSelect = (event, value) => {
+    const newSelections = [...selectedFood];
+    const lastSelectedItem = value[value.length - 1];
+    
+    if (lastSelectedItem && lastSelectedItem.title === "Add Food Item") {
+      onOpenAddDialog("food");
+    } else {
+      const index = newSelections.findIndex(item => item.title === lastSelectedItem.title);
+      if (index !== -1) {
+        // Increment the count if the item is already selected
+        newSelections[index].count += 1;
+      } else {
+        // Add the new item with an initial count of 1
+        newSelections.push({ ...lastSelectedItem, count: 1 });
+      }
+      setSelectedFood(newSelections);
+    }
+  };
 
   return (
     <Stack
@@ -80,15 +100,9 @@ const Dropdown = ({ id, emp, lunch, handleDeleteClick, onOpenAddDialog }) => {
         id="tags-outlined-2"
         options={[...lunch, { title: "Add Food Item" }]} // Directly using lunch state from props
         getOptionLabel={(option) => option.title}
-        filterSelectedOptions
-        onChange={(event, value) => {
-          if (
-            value.length &&
-            value[value.length - 1].title === "Add Food Item"
-          ) {
-            onOpenAddDialog("food");
-          }
-        }}
+        filterSelectedOptions={false} // Allow multiple selections of the same item
+        onChange={handleFoodSelect}
+        value={selectedFood} // Bind value to selectedFood state
         renderInput={(params) => (
           <CustomTextField
             {...params}
@@ -101,7 +115,7 @@ const Dropdown = ({ id, emp, lunch, handleDeleteClick, onOpenAddDialog }) => {
             .filter((option) => option.title !== "Add Food Item") // Exclude the "Add Food Item" option
             .map((option, index) => (
               <CustomChip
-                label={option.title}
+                label={`${option.title} x${option.count}`} // Display item title and count
                 {...getTagProps({ index })}
                 key={index}
               />

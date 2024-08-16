@@ -33,15 +33,28 @@ function App() {
     setOpen(false);
   };
 
+  // const handleAddItem = (item) => {
+  //   if (addType === "employee") {
+  //     setEmp([...emp, { name: item }]);
+  //     // localStorage.setItem( item);
+      
+  //   } else if (addType === "food") {
+  //     setLunch([...lunch, { title: item }]);
+  //   }
+  //   handleClose();
+  // };
+  
   const handleAddItem = (item) => {
     if (addType === "employee") {
       setEmp([...emp, { name: item }]);
     } else if (addType === "food") {
-      setLunch([...lunch, { title: item }]);
+      setLunch([...lunch, { title: item.title, cost: item.cost }]);
     }
     handleClose();
   };
   
+
+
   return (
     <div className="App">
       <Navbar handleAddClick={handleAddClick} handleReset={handleReset} />
