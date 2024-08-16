@@ -11,16 +11,20 @@ const Add = ({ open, onClose, type, onAdd }) => {
   const [item, setItem] = useState("");
 
   const handleAdd = () => {
-    onAdd(item);
-    setItem(""); // Reset the input field after adding
+    if (item.trim() !== "") {
+      onAdd(item);  // Call the passed onAdd function to add the new item to the local state
+      setItem(""); // Reset the input field after adding
+    }
   };
 
   return (
     <Dialog open={open} onClose={onClose}>
-      <DialogTitle>{`Add New ${type === "employee" ? "Employee" : "Food Item"}`}</DialogTitle>
+      <DialogTitle>
+        {`Add New ${type === "employee" ? "Employee" : "Food Item"}`}
+      </DialogTitle>
       <DialogContent>
         <DialogContentText>
-          Please enter the name of the new {type === "employee" ? "employee" : "food item"}.
+          {`Please enter the name of the new ${type === "employee" ? "employee" : "food item"}.`}
         </DialogContentText>
         <TextField
           autoFocus
@@ -41,5 +45,3 @@ const Add = ({ open, onClose, type, onAdd }) => {
 };
 
 export default Add;
-
-

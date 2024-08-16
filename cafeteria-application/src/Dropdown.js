@@ -1,5 +1,5 @@
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import React from "react";
+import React, { useState } from "react"; // Import useState hook
 import { styled } from "@mui/material/styles";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
@@ -7,6 +7,7 @@ import Stack from "@mui/material/Stack";
 import Chip from "@mui/material/Chip";
 import { IconButton } from "@mui/material";
 
+// Custom styled components
 const CustomTextField = styled(TextField)(({ theme }) => ({
   "& .MuiOutlinedInput-root": {
     "& fieldset": {
@@ -36,6 +37,8 @@ const CustomChip = styled(Chip)(({ theme }) => ({
 }));
 
 const Dropdown = ({ id, emp, lunch, handleDeleteClick, onOpenAddDialog }) => {
+  const [selectedEmployee, setSelectedEmployee] = useState(null); // State to store selected employee
+
   return (
     <Stack
       spacing={3}
@@ -51,11 +54,15 @@ const Dropdown = ({ id, emp, lunch, handleDeleteClick, onOpenAddDialog }) => {
       <Autocomplete
         disablePortal
         id="combo-box-demo"
-        options={[...emp, { title: "Add Employee" }]}
-        getOptionLabel={(option) => option.title}
+        options={[...emp, { name: "Add Employee" }]} // Directly using emp state from props
+        getOptionLabel={(option) => option.name || option.name} // Adjust label for employee name
+        value={selectedEmployee} // Bind value to the state
         onChange={(event, value) => {
-          if (value && value.title === "Add Employee") {
+          if (value && value.name === "Add Employee") {
             onOpenAddDialog("employee");
+            setSelectedEmployee(null); // Reset the selected value
+          } else {
+            setSelectedEmployee(value); // Update state with selected value
           }
         }}
         renderInput={(params) => (
@@ -71,7 +78,7 @@ const Dropdown = ({ id, emp, lunch, handleDeleteClick, onOpenAddDialog }) => {
       <Autocomplete
         multiple
         id="tags-outlined-2"
-        options={[...lunch, { title: "Add Food Item" }]}
+        options={[...lunch, { title: "Add Food Item" }]} // Directly using lunch state from props
         getOptionLabel={(option) => option.title}
         filterSelectedOptions
         onChange={(event, value) => {
@@ -90,13 +97,15 @@ const Dropdown = ({ id, emp, lunch, handleDeleteClick, onOpenAddDialog }) => {
           />
         )}
         renderTags={(value, getTagProps) =>
-          value.map((option, index) => (
-            <CustomChip
-              label={option.title}
-              {...getTagProps({ index })}
-              key={index}
-            />
-          ))
+          value
+            .filter((option) => option.title !== "Add Food Item") // Exclude the "Add Food Item" option
+            .map((option, index) => (
+              <CustomChip
+                label={option.title}
+                {...getTagProps({ index })}
+                key={index}
+              />
+            ))
         }
         sx={{ minWidth: 200, maxWidth: 550, flexGrow: 1 }}
       />
@@ -125,5 +134,3 @@ const Dropdown = ({ id, emp, lunch, handleDeleteClick, onOpenAddDialog }) => {
 };
 
 export default Dropdown;
-
-

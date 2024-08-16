@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Dropdown from "./Dropdown";
 import Navbar from "./Navbar";
 import Add from "./Add";
@@ -8,19 +8,8 @@ function App() {
   const [nextId, setNextId] = useState(1);
   const [open, setOpen] = useState(false);
   const [addType, setAddType] = useState(""); 
-  const [emp, setEmp] = useState([]);
-  const [lunch, setLunch] = useState([]);
-
-  useEffect(() => {
-    fetch("http://localhost:5000/api/employees")
-      .then((response) => response.json())
-      .then((data) => setEmp(data));
-  
-    fetch("http://localhost:5000/api/foods")
-      .then((response) => response.json())
-      .then((data) => setLunch(data));
-  }, []);
-  
+  const [emp, setEmp] = useState([]);  // Replace with local storage logic if needed
+  const [lunch, setLunch] = useState([]);  // Replace with local storage logic if needed
 
   const handleAddClick = () => {
     setForms([{ id: nextId }, ...forms]);
@@ -46,21 +35,9 @@ function App() {
 
   const handleAddItem = (item) => {
     if (addType === "employee") {
-      fetch("http://localhost:5000/api/employees", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: item }),
-      })
-        .then((response) => response.json())
-        .then(() => setEmp([...emp, { name: item }]));
+      setEmp([...emp, { name: item }]);
     } else if (addType === "food") {
-      fetch("http://localhost:5000/api/foods", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: item }),
-      })
-        .then((response) => response.json())
-        .then(() => setLunch([...lunch, { title: item }]));
+      setLunch([...lunch, { title: item }]);
     }
     handleClose();
   };
@@ -86,5 +63,3 @@ function App() {
 }
 
 export default App;
-
-
