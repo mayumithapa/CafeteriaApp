@@ -36,27 +36,43 @@ const CustomChip = styled(Chip)(({ theme }) => ({
   color: "white",
 }));
 
+// Wrapper for chip container to allow horizontal scrolling
+const ChipContainer = styled("div")({
+  display: "flex",
+  flexWrap: "nowrap",
+  overflowX: "auto", // Enable horizontal scrolling
+  whiteSpace: "nowrap", // Prevent chips from wrapping
+  padding: "5px 0",
+});
+
 const Dropdown = ({ id, emp, lunch, handleDeleteClick, onOpenAddDialog }) => {
   const [selectedEmployee, setSelectedEmployee] = useState(null); // State to store selected employee
   const [selectedFood, setSelectedFood] = useState([]); // State to store selected food items
 
   const handleFoodSelect = (event, value) => {
-    const newSelections = [...selectedFood];
-    const lastSelectedItem = value[value.length - 1];
+    const lastSelectedItem = value.length ? value[value.length - 1] : null;
     
     if (lastSelectedItem && lastSelectedItem.title === "Add Food Item") {
       onOpenAddDialog("food");
-    } else {
-      const index = newSelections.findIndex(item => item.title === lastSelectedItem.title);
-      if (index !== -1) {
-        // Increment the count if the item is already selected
-        newSelections[index].count += 1;
+    } else if (lastSelectedItem) {
+      const existingItemIndex = selectedFood.findIndex(
+        (item) => item.title === lastSelectedItem.title
+      );
+
+      if (existingItemIndex !== -1) {
+        const newSelections = [...selectedFood];
+        newSelections[existingItemIndex].count += 1;
+        setSelectedFood(newSelections);
       } else {
-        // Add the new item with an initial count of 1
-        newSelections.push({ ...lastSelectedItem, count: 1 });
+        setSelectedFood([...selectedFood, { ...lastSelectedItem, count: 1 }]);
       }
-      setSelectedFood(newSelections);
     }
+  };
+
+  const handleChipDelete = (chipToDelete) => {
+    setSelectedFood((chips) =>
+      chips.filter((chip) => chip.title !== chipToDelete.title)
+    );
   };
 
   return (
@@ -93,6 +109,9 @@ const Dropdown = ({ id, emp, lunch, handleDeleteClick, onOpenAddDialog }) => {
           />
         )}
         sx={{ minWidth: 200, maxWidth: 550, flexGrow: 1, color: "#7d6b56" }}
+        ListboxProps={{
+          sx: { maxHeight: 200, overflowY: "auto" }, // Optional: Add vertical scroll to dropdown list if needed
+        }}
       />
 
       <Autocomplete
@@ -110,18 +129,24 @@ const Dropdown = ({ id, emp, lunch, handleDeleteClick, onOpenAddDialog }) => {
             placeholder="Food Item"
           />
         )}
-        renderTags={(value, getTagProps) =>
-          value
-            .filter((option) => option.title !== "Add Food Item") // Exclude the "Add Food Item" option
-            .map((option, index) => (
-              <CustomChip
-                label={`${option.title} x${option.count}`} // Display item title and count
-                {...getTagProps({ index })}
-                key={index}
-              />
-            ))
-        }
+        renderTags={(value, getTagProps) => (
+          <ChipContainer>
+            {value
+              .filter((option) => option.title !== "Add Food Item") // Exclude the "Add Food Item" option
+              .map((option, index) => (
+                <CustomChip
+                  label={`${option.title} x${option.count}`} // Display item title and count
+                  {...getTagProps({ index })}
+                  onDelete={() => handleChipDelete(option)} // Handle chip deletion
+                  key={index}
+                />
+              ))}
+          </ChipContainer>
+        )}
         sx={{ minWidth: 200, maxWidth: 550, flexGrow: 1 }}
+        ListboxProps={{
+          sx: { maxHeight: 200, overflowY: "auto" }, // Optional: Add vertical scroll to dropdown list if needed
+        }}
       />
 
       <CustomTextField
