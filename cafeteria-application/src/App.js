@@ -8,8 +8,8 @@ function App() {
   const [nextId, setNextId] = useState(1);
   const [open, setOpen] = useState(false);
   const [addType, setAddType] = useState(""); 
-  const [emp, setEmp] = useState([]);  // Replace with local storage logic if needed
-  const [lunch, setLunch] = useState([]);  // Replace with local storage logic if needed
+  const [emp, setEmp] = useState([]);
+  const [lunch, setLunch] = useState([]);
 
   const handleAddClick = () => {
     setForms([{ id: nextId }, ...forms]);
@@ -32,17 +32,6 @@ function App() {
   const handleClose = () => {
     setOpen(false);
   };
-
-  // const handleAddItem = (item) => {
-  //   if (addType === "employee") {
-  //     setEmp([...emp, { name: item }]);
-  //     // localStorage.setItem( item);
-      
-  //   } else if (addType === "food") {
-  //     setLunch([...lunch, { title: item }]);
-  //   }
-  //   handleClose();
-  // };
   
   const handleAddItem = (item) => {
     if (addType === "employee") {
