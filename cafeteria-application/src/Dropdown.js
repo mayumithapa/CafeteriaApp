@@ -7,7 +7,6 @@ import Chip from "@mui/material/Chip";
 import { IconButton } from "@mui/material";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 
-// Custom styled components
 const CustomTextField = styled(TextField)(({ theme }) => ({
   "& .MuiOutlinedInput-root": {
     "& fieldset": {
@@ -36,22 +35,21 @@ const CustomChip = styled(Chip)(({ theme }) => ({
   color: "white",
 }));
 
-// Wrapper for chip container to allow horizontal scrolling
 const ChipContainer = styled("div")({
   display: "flex",
   flexWrap: "nowrap",
-  overflowX: "auto", // Enable horizontal scrolling
-  whiteSpace: "nowrap", // Prevent chips from wrapping
+  overflowX: "auto",
+  whiteSpace: "nowrap",
   padding: "5px 0",
 });
 
-const Dropdown = ({ id, emp, lunch, handleDeleteClick, onOpenAddDialog }) => {
-  const [selectedEmployee, setSelectedEmployee] = useState(null); // State to store selected employee
-  const [selectedFood, setSelectedFood] = useState([]); // State to store selected food items
+const Dropdown = ({ id, emp, lunch, handleDeleteClick, onOpenAddDialog, onEmployeeSelect }) => {
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [selectedFood, setSelectedFood] = useState([]);
 
   const handleFoodSelect = (event, value) => {
     const lastSelectedItem = value.length ? value[value.length - 1] : null;
-    
+
     if (lastSelectedItem && lastSelectedItem.title === "Add Food Item") {
       onOpenAddDialog("food");
     } else if (lastSelectedItem) {
@@ -75,9 +73,8 @@ const Dropdown = ({ id, emp, lunch, handleDeleteClick, onOpenAddDialog }) => {
     );
   };
 
-  // Custom clear function to reset selectedFood state and chip counts
   const handleClear = () => {
-    setSelectedFood([]); // Clear all selected food items
+    setSelectedFood([]);
   };
 
   return (
@@ -95,15 +92,16 @@ const Dropdown = ({ id, emp, lunch, handleDeleteClick, onOpenAddDialog }) => {
       <Autocomplete
         disablePortal
         id="combo-box-demo"
-        options={[...emp, { name: "Add Employee" }]} // Directly using emp state from props
-        getOptionLabel={(option) => option.name || option.name} // Adjust label for employee name
-        value={selectedEmployee} // Bind value to the state
+        options={[...emp, { name: "Add Employee" }]}
+        getOptionLabel={(option) => option.name || option.name}
+        value={selectedEmployee}
         onChange={(event, value) => {
           if (value && value.name === "Add Employee") {
             onOpenAddDialog("employee");
-            setSelectedEmployee(null); // Reset the selected value
+            setSelectedEmployee(null);
           } else {
-            setSelectedEmployee(value); // Update state with selected value
+            setSelectedEmployee(value);
+            onEmployeeSelect(value); // Notify parent about the selected employee
           }
         }}
         renderInput={(params) => (
@@ -115,58 +113,57 @@ const Dropdown = ({ id, emp, lunch, handleDeleteClick, onOpenAddDialog }) => {
         )}
         sx={{ minWidth: 200, maxWidth: 550, flexGrow: 1, color: "#7d6b56" }}
         ListboxProps={{
-          sx: { maxHeight: 200, overflowY: "auto" }, // Optional: Add vertical scroll to dropdown list if needed
+          sx: { maxHeight: 200, overflowY: "auto" },
         }}
       />
 
-<Autocomplete
-  multiple
-  id="tags-outlined-2"
-  options={[...lunch, { title: "Add Food Item" }]} // Directly using lunch state from props
-  getOptionLabel={(option) => option.title}
-  filterSelectedOptions={false} // Allow multiple selections of the same item
-  onChange={handleFoodSelect}
-  value={selectedFood} // Bind value to selectedFood state
-  disableClearable={true} // Disable the original clear button
-  clearOnEscape={false} // Prevent clearing on escape key press
-  renderInput={(params) => (
-    <CustomTextField
-      {...params}
-      label="Food Item"
-      placeholder="Food Item"
-      InputProps={{
-        ...params.InputProps,
-        endAdornment: (
-          <React.Fragment>
-            {params.InputProps.endAdornment}
-            <IconButton onClick={handleClear}>
-              {/* Add custom clear button icon */}
-              <DeleteOutlineIcon />
-            </IconButton>
-          </React.Fragment>
-        ),
-      }}
-    />
-  )}
-  renderTags={(value, getTagProps) => (
-    <ChipContainer>
-      {value
-        .filter((option) => option.title !== "Add Food Item") // Exclude the "Add Food Item" option
-        .map((option, index) => (
-          <CustomChip
-            label={`${option.title} x${option.count}`} // Display item title and count
-            {...getTagProps({ index })}
-            onDelete={() => handleChipDelete(option)} // Handle chip deletion
-            key={index}
+      <Autocomplete
+        multiple
+        id="tags-outlined-2"
+        options={[...lunch, { title: "Add Food Item" }]}
+        getOptionLabel={(option) => option.title}
+        filterSelectedOptions={false}
+        onChange={handleFoodSelect}
+        value={selectedFood}
+        disableClearable={true}
+        clearOnEscape={false}
+        renderInput={(params) => (
+          <CustomTextField
+            {...params}
+            label="Food Item"
+            placeholder="Food Item"
+            InputProps={{
+              ...params.InputProps,
+              endAdornment: (
+                <React.Fragment>
+                  {params.InputProps.endAdornment}
+                  <IconButton onClick={handleClear}>
+                    <DeleteOutlineIcon />
+                  </IconButton>
+                </React.Fragment>
+              ),
+            }}
           />
-        ))}
-    </ChipContainer>
-  )}
-  sx={{ minWidth: 200, maxWidth: 550, flexGrow: 1 }}
-  ListboxProps={{
-    sx: { maxHeight: 200, overflowY: "auto" }, // Optional: Add vertical scroll to dropdown list if needed
-  }}
-/>
+        )}
+        renderTags={(value, getTagProps) => (
+          <ChipContainer>
+            {value
+              .filter((option) => option.title !== "Add Food Item")
+              .map((option, index) => (
+                <CustomChip
+                  label={`${option.title} x${option.count}`}
+                  {...getTagProps({ index })}
+                  onDelete={() => handleChipDelete(option)}
+                  key={index}
+                />
+              ))}
+          </ChipContainer>
+        )}
+        sx={{ minWidth: 200, maxWidth: 550, flexGrow: 1 }}
+        ListboxProps={{
+          sx: { maxHeight: 200, overflowY: "auto" },
+        }}
+      />
 
       <CustomTextField
         id="outlined-read-only-input"
@@ -187,9 +184,7 @@ const Dropdown = ({ id, emp, lunch, handleDeleteClick, onOpenAddDialog }) => {
           }}
         />
       </IconButton>
-
     </Stack>
-    
   );
 };
 

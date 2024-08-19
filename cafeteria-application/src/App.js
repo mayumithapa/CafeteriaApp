@@ -10,6 +10,8 @@ function App() {
   const [addType, setAddType] = useState(""); 
   const [emp, setEmp] = useState([]);
   const [lunch, setLunch] = useState([]);
+  const [removedEmployees, setRemovedEmployees] = useState([]);
+
 
   const handleAddClick = () => {
     setForms([{ id: nextId }, ...forms]);
@@ -42,6 +44,25 @@ function App() {
     handleClose();
   };
   
+    // New handler to update emp array and notify Dropdown
+    // const handleEmployeeSelect = (selectedEmployee) => {
+    //   setEmp(emp.filter(employee => employee.name !== selectedEmployee.name));
+    // };
+
+    const handleEmployeeSelect = (selectedEmployee) => {
+      if (selectedEmployee) {
+        // Remove the selected employee from the emp list
+        setEmp(emp.filter(employee => employee.name !== selectedEmployee.name));
+    
+        // Add the selected employee to removedEmployees
+        setRemovedEmployees([...removedEmployees, selectedEmployee]);
+      } else {
+        // Re-add removed employees if the input field is cleared
+        setEmp([...emp, ...removedEmployees]);
+        setRemovedEmployees([]); // Clear removed employees list
+      }
+    };
+    
 
 
   return (
@@ -56,6 +77,8 @@ function App() {
             lunch={lunch}
             handleDeleteClick={handleDeleteClick}
             onOpenAddDialog={handleOpenAddDialog}
+            onEmployeeSelect={handleEmployeeSelect} // Pass handler to Dropdown
+
           />
         ))}
       </div>
