@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { styled } from "@mui/material/styles";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
@@ -46,6 +46,7 @@ const ChipContainer = styled("div")({
 const Dropdown = ({ id, emp, lunch, handleDeleteClick, onOpenAddDialog, onEmployeeSelect }) => {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [selectedFood, setSelectedFood] = useState([]);
+  const [totalCost, setTotalCost] = useState(0);
 
   const handleFoodSelect = (event, value) => {
     const lastSelectedItem = value.length ? value[value.length - 1] : null;
@@ -76,6 +77,19 @@ const Dropdown = ({ id, emp, lunch, handleDeleteClick, onOpenAddDialog, onEmploy
   const handleClear = () => {
     setSelectedFood([]);
   };
+
+  useEffect(() => {
+    // Calculate total cost when selectedFood changes
+    const calculateTotalCost = () => {
+      let total = 0;
+      selectedFood.forEach((item) => {
+        total += item.count * item.cost;
+      });
+      setTotalCost(total);
+    };
+
+    calculateTotalCost();
+  }, [selectedFood]);
 
   return (
     <Stack
@@ -171,6 +185,7 @@ const Dropdown = ({ id, emp, lunch, handleDeleteClick, onOpenAddDialog, onEmploy
         InputProps={{
           readOnly: true,
         }}
+        value={`₹${totalCost}`}
         sx={{ minWidth: 150, maxWidth: 200, flexGrow: 1 }}
       />
 

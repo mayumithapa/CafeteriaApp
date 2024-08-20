@@ -9,19 +9,18 @@ import TextField from "@mui/material/TextField";
 
 const Add = ({ open, onClose, type, onAdd }) => {
   const [item, setItem] = useState("");
-  const [cost, setCost] = useState(""); // State to hold the cost of the food item
+  const [cost, setCost] = useState(null);
 
   const handleAdd = () => {
     if (item.trim() !== "") {
-      if (type === "food" && cost.trim() !== "") {
-        // Add both item and cost for food items
+      if (type === "food" && cost > 0) {
         onAdd({ title: item, cost });
       } else if (type === "employee") {
-        // Add only the item for employees
         onAdd(item);
       }
-      setItem(""); // Reset the input field after adding
-      setCost(""); // Reset the cost field after adding
+      setItem("");
+      setCost(null); 
+      console.log(`Cost Value: ${cost}, Type: ${typeof cost}`)
     }
   };
 
@@ -50,9 +49,9 @@ const Add = ({ open, onClose, type, onAdd }) => {
             fullWidth
             variant="outlined"
             value={cost}
-            onChange={(e) => setCost(e.target.value)}
-            type="number" // Set input type to number to ensure only numeric values
-            inputProps={{ min: 0 }} // Optional: restrict minimum value to 0, preventing negative numbers
+            onChange={(e) => setCost(Number(e.target.value))}
+            type="number"
+            inputProps={{ min: 1 }} 
           />
         )}
       </DialogContent>
