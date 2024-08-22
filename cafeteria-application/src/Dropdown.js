@@ -43,8 +43,8 @@ const ChipContainer = styled("div")({
   padding: "5px 0",
 });
 
-const Dropdown = ({ id, emp, lunch, handleDeleteClick, onOpenAddDialog, onEmployeeSelect }) => {
-  const [selectedEmployee, setSelectedEmployee] = useState(null);
+const Dropdown = ({ id, emp, lunch, handleDeleteClick, handleOpenAddDialog, onEmployeeSelect }) => {
+  const [selectedEmployee, setSelectedEmployee] = useState(null); //yaha selectedEmployee initialize hua hai and yeh locally ek form ka value set kr rha hai
   const [selectedFood, setSelectedFood] = useState([]);
   const [totalCost, setTotalCost] = useState(0);
 
@@ -52,7 +52,7 @@ const Dropdown = ({ id, emp, lunch, handleDeleteClick, onOpenAddDialog, onEmploy
     const lastSelectedItem = value.length ? value[value.length - 1] : null;
 
     if (lastSelectedItem && lastSelectedItem.title === "Add Food Item") {
-      onOpenAddDialog("food");
+      handleOpenAddDialog("food");
     } else if (lastSelectedItem) {
       const existingItemIndex = selectedFood.findIndex(
         (item) => item.title === lastSelectedItem.title
@@ -111,7 +111,7 @@ const Dropdown = ({ id, emp, lunch, handleDeleteClick, onOpenAddDialog, onEmploy
         value={selectedEmployee}
         onChange={(event, value) => {
           if (value && value.name === "Add Employee") {
-            onOpenAddDialog("employee");
+            handleOpenAddDialog("employee");
             setSelectedEmployee(null);
           } else {
             setSelectedEmployee(value);
@@ -204,3 +204,4 @@ const Dropdown = ({ id, emp, lunch, handleDeleteClick, onOpenAddDialog, onEmploy
 };
 
 export default Dropdown;
+

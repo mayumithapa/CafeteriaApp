@@ -4,13 +4,13 @@ import Navbar from "./Navbar";
 import Add from "./Add";
 
 function App() {
-  const [forms, setForms] = useState([]);
+  const [forms, setForms] = useState([{id:0}]);
   const [nextId, setNextId] = useState(1);
-  const [open, setOpen] = useState(false);
-  const [addType, setAddType] = useState(""); 
-  const [emp, setEmp] = useState([]);
+  const [open, setOpen] = useState(false); //for dialogue box
+  const [addType, setAddType] = useState(""); // for dialogue box type
+  const [emp, setEmp] = useState([]); // emp array
   const [lunch, setLunch] = useState([]);
-  const [removedEmployees, setRemovedEmployees] = useState([]);
+  const [removedEmployees, setRemovedEmployees] = useState([]); //yaha array hai neeche obj hai? why?
   const [selectedEmployees, setSelectedEmployees] = useState({});
 
   const handleAddClick = () => {
@@ -27,14 +27,14 @@ function App() {
     }
 
     setForms(forms.filter((form) => form.id !== id));
-
-    const updatedSelections = { ...selectedEmployees };
+    // here we are creating a new obj because react does shallow comparision and if don't create react won't recodnize the change
+    const updatedSelections = { ...selectedEmployees }; 
     delete updatedSelections[id];
     setSelectedEmployees(updatedSelections);
   };
 
   const handleReset = () => {
-    setForms([]);
+    setForms([{id:0}]);
     setSelectedEmployees({});
     setEmp([...emp, ...removedEmployees]);
     setRemovedEmployees([]);
@@ -91,7 +91,7 @@ function App() {
               emp={availableEmployees}
               lunch={lunch}
               handleDeleteClick={handleDeleteClick}
-              onOpenAddDialog={handleOpenAddDialog}
+              handleOpenAddDialog={handleOpenAddDialog}
               onEmployeeSelect={(selectedEmployee) => handleEmployeeSelect(form.id, selectedEmployee)}
             />
           );
