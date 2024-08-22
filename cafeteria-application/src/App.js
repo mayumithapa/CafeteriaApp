@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Dropdown from "./Dropdown";
 import Navbar from "./Navbar";
 import Add from "./Add";
+import Receipt from "./Receipt";
 
 function App() {
   const [forms, setForms] = useState([{id:0}]);
@@ -10,34 +11,31 @@ function App() {
   const [addType, setAddType] = useState(""); // for dialogue box type
   const [emp, setEmp] = useState([]); // emp array
   const [lunch, setLunch] = useState([]);
-  const [removedEmployees, setRemovedEmployees] = useState([]); //yaha array hai neeche obj hai? why?
-  const [selectedEmployees, setSelectedEmployees] = useState({});
+  const [selectedData, setSelectedData] = useState([]);
 
+  const updateSelectedData = (id, employee, foodItems, totalCost) => {
+    const updatedData = [...selectedData];
+    const formIndex = updatedData.findIndex((form) => form.id === id);
+
+    if (formIndex !== -1) {
+      updatedData[formIndex] = { id, employee, foodItems, totalCost };
+    } else {
+      updatedData.push({ id, employee, foodItems, totalCost });
+    }
+
+    setSelectedData(updatedData);
+  };
   const handleAddClick = () => {
     setForms([{ id: nextId }, ...forms]);
     setNextId(nextId + 1);
   };
 
   const handleDeleteClick = (id) => {
-    const deletedEmployee = selectedEmployees[id];
-
-    if (deletedEmployee) {
-      setEmp([...emp, { name: deletedEmployee }]);
-      setRemovedEmployees(removedEmployees.filter(employee => employee.name !== deletedEmployee));
-    }
-
     setForms(forms.filter((form) => form.id !== id));
-    // here we are creating a new obj because react does shallow comparision and if don't create react won't recodnize the change
-    const updatedSelections = { ...selectedEmployees }; 
-    delete updatedSelections[id];
-    setSelectedEmployees(updatedSelections);
   };
 
   const handleReset = () => {
     setForms([{id:0}]);
-    setSelectedEmployees({});
-    setEmp([...emp, ...removedEmployees]);
-    setRemovedEmployees([]);
   };
 
   const handleOpenAddDialog = (type) => {
@@ -58,48 +56,29 @@ function App() {
     handleClose();
   };
   
-  const handleEmployeeSelect = (formId, selectedEmployee) => {
-    if (selectedEmployee) {
-      setSelectedEmployees({
-        ...selectedEmployees,
-        [formId]: selectedEmployee.name,
-      });
-
-      setEmp(emp.filter(employee => employee.name !== selectedEmployee.name));
-      setRemovedEmployees([...removedEmployees, selectedEmployee]);
-    } else {
-      const reAddedEmployee = selectedEmployees[formId];
-      setEmp([...emp, { name: reAddedEmployee }]);
-
-      const updatedSelections = { ...selectedEmployees };
-      delete updatedSelections[formId];
-      setSelectedEmployees(updatedSelections);
-    }
-  };
-
   return (
     <div className="App">
       <Navbar handleAddClick={handleAddClick} handleReset={handleReset} />
       <div className="body">
         {forms.map((form) => {
-          const availableEmployees = emp.filter(employee => !Object.values(selectedEmployees).includes(employee.name));
-
           return (
             <Dropdown
               key={form.id}
               id={form.id}
-              emp={availableEmployees}
+              emp={emp}
               lunch={lunch}
               handleDeleteClick={handleDeleteClick}
               handleOpenAddDialog={handleOpenAddDialog}
-              onEmployeeSelect={(selectedEmployee) => handleEmployeeSelect(form.id, selectedEmployee)}
+              updateSelectedData={updateSelectedData}
             />
           );
         })}
       </div>
       <Add open={open} onClose={handleClose} type={addType} onAdd={handleAddItem} />
+      <Receipt data={selectedData} />
     </div>
   );
 }
 
 export default App;
+

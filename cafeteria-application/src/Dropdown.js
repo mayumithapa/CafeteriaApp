@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import './Dropdown.css';
 import { styled } from "@mui/material/styles";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
@@ -29,7 +30,7 @@ const CustomTextField = styled(TextField)(({ theme }) => ({
     color: "#7d6b56",
   },
 }));
-
+  
 const CustomChip = styled(Chip)(({ theme }) => ({
   backgroundColor: "#d8d0c7",
   color: "white",
@@ -43,10 +44,10 @@ const ChipContainer = styled("div")({
   padding: "5px 0",
 });
 
-const Dropdown = ({ id, emp, lunch, handleDeleteClick, handleOpenAddDialog, onEmployeeSelect }) => {
+const Dropdown = ({ id, emp, lunch, handleDeleteClick, handleOpenAddDialog, updateSelectedData }) => {
   const [selectedEmployee, setSelectedEmployee] = useState(null); //yaha selectedEmployee initialize hua hai and yeh locally ek form ka value set kr rha hai
   const [selectedFood, setSelectedFood] = useState([]);
-  const [totalCost, setTotalCost] = useState(0);
+  const [totalCost, setTotalCost] = useState(null);
 
   const handleFoodSelect = (event, value) => {
     const lastSelectedItem = value.length ? value[value.length - 1] : null;
@@ -79,7 +80,6 @@ const Dropdown = ({ id, emp, lunch, handleDeleteClick, handleOpenAddDialog, onEm
   };
 
   useEffect(() => {
-    // Calculate total cost when selectedFood changes
     const calculateTotalCost = () => {
       let total = 0;
       selectedFood.forEach((item) => {
@@ -91,14 +91,19 @@ const Dropdown = ({ id, emp, lunch, handleDeleteClick, handleOpenAddDialog, onEm
     calculateTotalCost();
   }, [selectedFood]);
 
+  useEffect(() => {
+    updateSelectedData(id, selectedEmployee, selectedFood, totalCost); // Update selected data when employee or food items change
+  }, [selectedEmployee, selectedFood, totalCost]); // <-- Added this useEffect
+
   return (
     <Stack
       spacing={3}
       direction="row"
       sx={{
         display: "flex",
-        alignItems: "flex-end",
-        marginLeft: "20px",
+        justifyContent: "center",
+        // alignItems: "flex-end",
+        margin: "20px",
         marginBottom: "10px",
         color: "#7d6b56",
       }}
@@ -115,7 +120,6 @@ const Dropdown = ({ id, emp, lunch, handleDeleteClick, handleOpenAddDialog, onEm
             setSelectedEmployee(null);
           } else {
             setSelectedEmployee(value);
-            onEmployeeSelect(value); // Notify parent about the selected employee
           }
         }}
         renderInput={(params) => (
@@ -125,7 +129,7 @@ const Dropdown = ({ id, emp, lunch, handleDeleteClick, handleOpenAddDialog, onEm
             placeholder="Employee Name"
           />
         )}
-        sx={{ minWidth: 200, maxWidth: 550, flexGrow: 1, color: "#7d6b56" }}
+        sx={{ minWidth: 100, maxWidth: 200, flexGrow: 1, color: "#7d6b56" }}
         ListboxProps={{
           sx: { maxHeight: 200, overflowY: "auto" },
         }}
@@ -173,7 +177,7 @@ const Dropdown = ({ id, emp, lunch, handleDeleteClick, handleOpenAddDialog, onEm
               ))}
           </ChipContainer>
         )}
-        sx={{ minWidth: 200, maxWidth: 550, flexGrow: 1 }}
+        sx={{ minWidth: 200, maxWidth: 800, flexGrow: 1 }}
         ListboxProps={{
           sx: { maxHeight: 200, overflowY: "auto" },
         }}
@@ -186,7 +190,7 @@ const Dropdown = ({ id, emp, lunch, handleDeleteClick, handleOpenAddDialog, onEm
           readOnly: true,
         }}
         value={`₹${totalCost}`}
-        sx={{ minWidth: 150, maxWidth: 200, flexGrow: 1 }}
+        sx={{ minWidth: 100, maxWidth: 200, flexGrow: 1 }}
       />
 
       <IconButton onClick={() => handleDeleteClick(id)}>
@@ -204,4 +208,3 @@ const Dropdown = ({ id, emp, lunch, handleDeleteClick, handleOpenAddDialog, onEm
 };
 
 export default Dropdown;
-
