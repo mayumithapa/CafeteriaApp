@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
 import './Dropdown.css';
 import { styled } from "@mui/material/styles";
-import Autocomplete from "@mui/material/Autocomplete";
-import TextField from "@mui/material/TextField";
+import { Autocomplete, TextField, IconButton } from '@mui/material';
 import Stack from "@mui/material/Stack";
 import Chip from "@mui/material/Chip";
-import { IconButton } from "@mui/material";
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 
 const CustomTextField = styled(TextField)(({ theme }) => ({
@@ -49,12 +48,15 @@ const Dropdown = ({ id, emp, lunch, handleDeleteClick, handleOpenAddDialog, upda
   const [selectedFood, setSelectedFood] = useState([]);
   const [totalCost, setTotalCost] = useState(null);
 
+  // const clearInputReset = (id) => {
+  //   setSelectedEmployee([]);
+  //   setSelectedFood([]);
+  // }
+
   const handleFoodSelect = (event, value) => {
     const lastSelectedItem = value.length ? value[value.length - 1] : null;
 
-    if (lastSelectedItem && lastSelectedItem.title === "Add Food Item") {
-      handleOpenAddDialog("food");
-    } else if (lastSelectedItem) {
+    if (lastSelectedItem) {
       const existingItemIndex = selectedFood.findIndex(
         (item) => item.title === lastSelectedItem.title
       );
@@ -102,7 +104,6 @@ const Dropdown = ({ id, emp, lunch, handleDeleteClick, handleOpenAddDialog, upda
       sx={{
         display: "flex",
         justifyContent: "center",
-        // alignItems: "flex-end",
         margin: "20px",
         marginBottom: "10px",
         color: "#7d6b56",
@@ -111,14 +112,11 @@ const Dropdown = ({ id, emp, lunch, handleDeleteClick, handleOpenAddDialog, upda
       <Autocomplete
         disablePortal
         id="combo-box-demo"
-        options={[...emp, { name: "Add Employee" }]}
+        options={[...emp]}
         getOptionLabel={(option) => option.name || option.name}
         value={selectedEmployee}
         onChange={(event, value) => {
-          if (value && value.name === "Add Employee") {
-            handleOpenAddDialog("employee");
-            setSelectedEmployee(null);
-          } else {
+          if (value) {
             setSelectedEmployee(value);
           }
         }}
@@ -127,9 +125,20 @@ const Dropdown = ({ id, emp, lunch, handleDeleteClick, handleOpenAddDialog, upda
             {...params}
             label="Employee Name"
             placeholder="Employee Name"
+            InputProps={{
+              ...params.InputProps,
+              endAdornment: (
+                <>
+                  {params.InputProps.endAdornment}
+                  <IconButton onClick={() => handleOpenAddDialog("employee")}> {/* Add Icon added in Employee dropdown */}
+                    <AddCircleOutlineIcon />
+                  </IconButton>
+                </>
+              ),
+            }}
           />
         )}
-        sx={{ minWidth: 100, maxWidth: 200, flexGrow: 1, color: "#7d6b56" }}
+        sx={{ minWidth: 100, maxWidth: 220, flexGrow: 1, color: "#7d6b56" }}
         ListboxProps={{
           sx: { maxHeight: 200, overflowY: "auto" },
         }}
@@ -138,7 +147,8 @@ const Dropdown = ({ id, emp, lunch, handleDeleteClick, handleOpenAddDialog, upda
       <Autocomplete
         multiple
         id="tags-outlined-2"
-        options={[...lunch, { title: "Add Food Item" }]}
+        // options={[...lunch, { title: "Add Food Item" }]}
+        options={[...lunch]}
         getOptionLabel={(option) => option.title}
         filterSelectedOptions={false}
         onChange={handleFoodSelect}
@@ -153,7 +163,14 @@ const Dropdown = ({ id, emp, lunch, handleDeleteClick, handleOpenAddDialog, upda
             InputProps={{
               ...params.InputProps,
               endAdornment: (
+                
                 <React.Fragment>
+                   <>
+                  {params.InputProps.endAdornment}
+                  <IconButton onClick={() => handleOpenAddDialog("food")}> {/* Add Icon added in Food Item dropdown */}
+                    <AddCircleOutlineIcon />
+                  </IconButton>
+                </>
                   {params.InputProps.endAdornment}
                   <IconButton onClick={handleClear}>
                     <DeleteOutlineIcon />
@@ -190,7 +207,7 @@ const Dropdown = ({ id, emp, lunch, handleDeleteClick, handleOpenAddDialog, upda
           readOnly: true,
         }}
         value={`₹${totalCost}`}
-        sx={{ minWidth: 100, maxWidth: 200, flexGrow: 1 }}
+        sx={{ minWidth: 100, maxWidth: 150, flexGrow: 1 }}
       />
 
       <IconButton onClick={() => handleDeleteClick(id)}>

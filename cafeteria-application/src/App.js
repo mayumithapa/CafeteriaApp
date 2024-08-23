@@ -23,7 +23,7 @@ function App() {
       updatedData.push({ id, employee, foodItems, totalCost });
     }
 
-    setSelectedData(updatedData);
+    setSelectedData(updatedData);// i need to read this function 
   };
   const handleAddClick = () => {
     setForms([{ id: nextId }, ...forms]);
