@@ -43,15 +43,10 @@ const ChipContainer = styled("div")({
   padding: "5px 0",
 });
 
-const Dropdown = ({ id, emp, lunch, handleDeleteClick, handleOpenAddDialog, updateSelectedData }) => {
+const Dropdown = ({ id, emp, lunch, handleDeleteClick, handleOpenAddDialog, updateSelectedData}) => {
   const [selectedEmployee, setSelectedEmployee] = useState(null); //yaha selectedEmployee initialize hua hai and yeh locally ek form ka value set kr rha hai
   const [selectedFood, setSelectedFood] = useState([]);
   const [totalCost, setTotalCost] = useState(null);
-
-  // const clearInputReset = (id) => {
-  //   setSelectedEmployee([]);
-  //   setSelectedFood([]);
-  // }
 
   const handleFoodSelect = (event, value) => {
     const lastSelectedItem = value.length ? value[value.length - 1] : null;
@@ -225,3 +220,4 @@ const Dropdown = ({ id, emp, lunch, handleDeleteClick, handleOpenAddDialog, upda
 };
 
 export default Dropdown;
+

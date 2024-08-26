@@ -9,12 +9,19 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { Divider, Box } from '@mui/material';
 
-const Receipt = ({ data }) => {
+const Receipt = ({ selectedData }) => {
   const [isOrderConfirmed, setIsOrderConfirmed] = useState(false);
 
   const confirmOrder = () => {
     setIsOrderConfirmed(true);
   };
+
+    // Calculate totals
+    const totalEmployees = selectedData.length;
+    const totalQuantity = selectedData.reduce((sum, row) => 
+      sum + row.foodItems.reduce((itemSum, item) => itemSum + item.count, 0)
+    , 0);
+    const totalCost = selectedData.reduce((sum, row) => sum + row.totalCost, 0);
 
   return (
     <>
@@ -28,14 +35,14 @@ const Receipt = ({ data }) => {
         <Table sx={{ minWidth: 400, maxWidth: 1000 }} aria-label="receipt table">
           <TableHead>
             <TableRow>
-              <TableCell align='center' sx={{ color: '#7d6b56', fontSize: 17 }}>Employee Name</TableCell>
-              <TableCell align="center" sx={{ color: '#7d6b56', fontSize: 17 }}>Food Items</TableCell>
-              <TableCell align="center" sx={{ color: '#7d6b56', fontSize: 17 }}>Quantity</TableCell>
-              <TableCell align="center" sx={{ color: '#7d6b56', fontSize: 17 }}>Cost</TableCell>
+              <TableCell align='center' sx={{ fontWeight: 'bold', color: '#7d6b56', fontSize: 17 }}>Employee Name</TableCell>
+              <TableCell align="center" sx={{ fontWeight: 'bold', color: '#7d6b56', fontSize: 17 }}>Food Items</TableCell>
+              <TableCell align="center" sx={{ fontWeight: 'bold', color: '#7d6b56', fontSize: 17 }}>Quantity</TableCell>
+              <TableCell align="center" sx={{ fontWeight: 'bold', color: '#7d6b56', fontSize: 17 }}>Cost</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.map((row, index) => (
+            {selectedData.map((row, index) => (
               <TableRow key={index}>
                 <TableCell component="th" scope="row" align='center' sx={{ color: '#7d6b56', fontSize: 16 }}>
                   {row.employee ? row.employee.name : ""}
@@ -49,6 +56,14 @@ const Receipt = ({ data }) => {
                 <TableCell align="center" sx={{ color: '#7d6b56', fontSize: 16 }}>{`₹${row.totalCost}`}</TableCell>
               </TableRow>
             ))}
+            <TableRow>
+              <TableCell align='center' sx={{ fontWeight: 'bold', color: '#7d6b56', fontSize: 16 }}>Total Employees: {totalEmployees}</TableCell>
+              <TableCell align="center" sx={{ fontWeight: 'bold', color: '#7d6b56', fontSize: 16 }}>-</TableCell>
+              <TableCell align="center" sx={{ fontWeight: 'bold', color: '#7d6b56', fontSize: 16 }}>Total Quantity: 
+                {totalQuantity}
+              </TableCell>
+              <TableCell align="center" sx={{ fontWeight: 'bold', color: '#7d6b56', fontSize: 16 }}>Total Cost:{` ₹${totalCost}`}</TableCell>
+            </TableRow>
           </TableBody>
         </Table>
       </TableContainer>

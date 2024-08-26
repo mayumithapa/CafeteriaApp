@@ -1,17 +1,25 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from 'react';
 import Dropdown from "./Dropdown";
 import Navbar from "./Navbar";
 import Add from "./Add";
 import Receipt from "./Receipt";
 
 function App() {
-  const [forms, setForms] = useState([{id:0}]);
+  const [forms, setForms] = useState([{ id: 0 }]);
   const [nextId, setNextId] = useState(1);
-  const [open, setOpen] = useState(false); //for dialogue box
-  const [addType, setAddType] = useState(""); // for dialogue box type
-  const [emp, setEmp] = useState([]); // emp array
+  const [open, setOpen] = useState(false);
+  const [addType, setAddType] = useState("");
+  const [emp, setEmp] = useState([]);
   const [lunch, setLunch] = useState([]);
   const [selectedData, setSelectedData] = useState([]);
+
+  useEffect(() => {
+    const storedEmployees = JSON.parse(localStorage.getItem('employees')) || [];
+    const storedFoodItems = JSON.parse(localStorage.getItem('foodItems')) || [];
+    
+    setEmp(storedEmployees);
+    setLunch(storedFoodItems);
+  }, []);
 
   const updateSelectedData = (id, employee, foodItems, totalCost) => {
     const updatedData = [...selectedData];
@@ -23,8 +31,9 @@ function App() {
       updatedData.push({ id, employee, foodItems, totalCost });
     }
 
-    setSelectedData(updatedData);// i need to read this function 
+    setSelectedData(updatedData);
   };
+
   const handleAddClick = () => {
     setForms([{ id: nextId }, ...forms]);
     setNextId(nextId + 1);
@@ -32,10 +41,12 @@ function App() {
 
   const handleDeleteClick = (id) => {
     setForms(forms.filter((form) => form.id !== id));
+    setSelectedData(selectedData.filter((data) => data.id !== id));
   };
 
   const handleReset = () => {
-    setForms([{id:0}]);
+    setForms([{ }]);
+    setSelectedData([]);
   };
 
   const handleOpenAddDialog = (type) => {
@@ -46,39 +57,40 @@ function App() {
   const handleClose = () => {
     setOpen(false);
   };
-  
+
   const handleAddItem = (item) => {
     if (addType === "employee") {
-      setEmp([...emp, { name: item }]);
+      const updatedEmployees = [...emp, { name: item }];
+      setEmp(updatedEmployees);
+      localStorage.setItem('employees', JSON.stringify(updatedEmployees));
     } else if (addType === "food") {
-      setLunch([...lunch, { title: item.title, cost: item.cost }]);
+      const updatedFood = [...lunch, { title: item.title, cost: item.cost }];
+      setLunch(updatedFood);
+      localStorage.setItem('foodItems', JSON.stringify(updatedFood));
     }
     handleClose();
   };
-  
+
   return (
     <div className="App">
       <Navbar handleAddClick={handleAddClick} handleReset={handleReset} />
       <div className="body">
-        {forms.map((form) => {
-          return (
-            <Dropdown
-              key={form.id}
-              id={form.id}
-              emp={emp}
-              lunch={lunch}
-              handleDeleteClick={handleDeleteClick}
-              handleOpenAddDialog={handleOpenAddDialog}
-              updateSelectedData={updateSelectedData}
-            />
-          );
-        })}
+        {forms.map((form) => (
+          <Dropdown
+            key={form.id}
+            id={form.id}
+            emp={emp}
+            lunch={lunch}
+            handleDeleteClick={handleDeleteClick}
+            handleOpenAddDialog={handleOpenAddDialog}
+            updateSelectedData={updateSelectedData}
+          />
+        ))}
       </div>
       <Add open={open} onClose={handleClose} type={addType} onAdd={handleAddItem} />
-      <Receipt data={selectedData} />
+      <Receipt selectedData={selectedData} />
     </div>
   );
 }
 
 export default App;
-
